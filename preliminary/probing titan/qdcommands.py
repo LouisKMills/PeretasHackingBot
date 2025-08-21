@@ -43,7 +43,7 @@ def main() -> None:
     run_cmd(["dir", "C:\\Users\\"])
     run_cmd(["dir", "C:\\Program Files\\"])
     run_cmd(["dir", "C:\\Program Files (x86)\\"])
-    run_cmd("wsl")
+    run_cmd("wsl -v")
 
 if __name__ == "__main__":
     main()
