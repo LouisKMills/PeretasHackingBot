@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 #
 # qdcommands.py, by Seb
 # A basic script made just to test some of the capabilities of the machine our code will run on.
@@ -9,8 +7,11 @@ import sys
 import time
 import subprocess
 
-def run_cmd(cmd_str: str, do_print=True) -> tuple:
-    cmd = cmd_str.split()
+def run_cmd(cmd_str, do_print=True) -> tuple:
+    if type(cmd_str) == str:
+        cmd = cmd_str.split()
+    else:
+        cmd = cmd_str
 
     start_time = time.time()
     nmap_run = subprocess.run(cmd, shell=True, capture_output=True)
@@ -33,10 +34,16 @@ def main() -> None:
     ip = sys.argv[1]
     outdir = sys.argv[2] if len(sys.argv) > 2 else "."
 
+    run_cmd("ver") # Gets windows version
     run_cmd("whoami")
-    run_cmd("pwd")
-    run_cmd("ifconfig")
-    run_cmd("ls /bin")
+    run_cmd("echo %cd%") # pwd equivalent
+    run_cmd("dir")
+    run_cmd("ipconfig")
+    run_cmd("echo %path%")
+    run_cmd(["dir", "C:\\Users\\"])
+    run_cmd(["dir", "C:\\Program Files\\"])
+    run_cmd(["dir", "C:\\Program Files (x86)\\"])
+    run_cmd("wsl")
 
 if __name__ == "__main__":
     main()
