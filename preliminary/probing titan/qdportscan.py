@@ -13,8 +13,8 @@ PORTS = [False for _ in range(1000)]
 # PRINT_LOCK = threading.Lock()
 
 PING_INTERVAL = 10
-PORT_RANGE = 250
-NUM_THREADS = 50
+PORT_RANGE = 500
+NUM_THREADS = 500
 
 def check_port(ip: str, port: int) -> bool:
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
