@@ -3,18 +3,18 @@
 # A quick&dirty script to wait for the target to go up and enumerate a bunch of ports to see if any are open
 #
 
-import os
 import sys
 import time
 import socket
 import threading
+import subprocess
 
 PORTS = [False for _ in range(1000)]
 # PRINT_LOCK = threading.Lock()
 
 PING_INTERVAL = 10
 PORT_RANGE = 1000
-NUM_THREADS = 50
+NUM_THREADS = 100
 
 def check_port(ip: str, port: int) -> bool:
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -33,29 +33,34 @@ def scan_thread(t: int, ip: str, start_port: int, num_ports: int):
         #     print(f"Thread {t+1}) Port {port} is", "open" if port_open else "closed")
 
 def is_target_up(ip: str) -> bool:
-    return os.system(f"ping -n 1 {ip}") == 0 # Cheeky: A nonzero status code means the target wasn't up
+    return subprocess.run(["ping", "-n", "1", ip], capture_output=True).returncode == 0 # Cheeky: A nonzero status code means the target wasn't up
 
 def main() -> None:
+    print("Argv:", sys.argv)
     _, ip, outdir = sys.argv
 
     # Wait for target to go up
     print("Waiting for target to go up.", end="")
+    wait_start = time.time()
     while not is_target_up(ip):
         print(".", end="")
         time.sleep(PING_INTERVAL)
-    print(" Target up!")
+    wait_end = time.time()
+    print(" Target up! Took", wait_end-wait_start, "seconds of waiting.")
 
     print("Beginning portscan...")
+    portscan_start = time.time()
     threads = []
     ports_per_thread = PORT_RANGE // NUM_THREADS
     for t in range(NUM_THREADS):
-        print(f"Thread {t+1} is in charge of ports {t*ports_per_thread} to {t*ports_per_thread+ports_per_thread}")
+        #print(f"Thread {t+1} is in charge of ports {t*ports_per_thread} to {t*ports_per_thread+ports_per_thread}")
         threads.append(threading.Thread(target=scan_thread, args=(t, ip, t*ports_per_thread, ports_per_thread)))
     for t in threads:
         t.start()
     for t in threads:
         t.join()
-    print("Portscan done! Results below:")
+    portscan_end = time.time()
+    print(f"Portscan done in {portscan_end - portscan_start} seconds! Results below:")
     for i, p in enumerate(PORTS):
         if p:
             print(f"Port {i+1} is up!")
