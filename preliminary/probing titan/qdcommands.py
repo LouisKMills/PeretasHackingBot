@@ -1,6 +1,6 @@
 #
 # qdcommands.py, by Seb
-# A basic script made just to test some of the capabilities of the machine our code will run on.
+# A quick&dirty basic script made just to test some of the capabilities of the machine our code will run on.
 #
 
 import sys
